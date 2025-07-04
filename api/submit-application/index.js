@@ -1,0 +1,98 @@
+const nodemailer = require('nodemailer');
+
+module.exports = async function (context, req) {
+    context.log('JavaScript HTTP trigger function processed a request.');
+
+    // Enable CORS
+    context.res = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        }
+    };
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        context.res.status = 200;
+        return;
+    }
+
+    // Only allow POST requests
+    if (req.method !== 'POST') {
+        context.res.status = 405;
+        context.res.body = { success: false, message: 'Method not allowed' };
+        return;
+    }
+
+    try {
+        const {
+            name,
+            email,
+            phone,
+            license,
+            experience,
+            specialization,
+            certifications
+        } = req.body;
+
+        // Validate required fields
+        if (!name || !email || !phone || !license) {
+            context.res.status = 400;
+            context.res.body = {
+                success: false,
+                message: 'Please fill in all required fields (name, email, phone, license)'
+            };
+            return;
+        }
+
+        // Email configuration
+        const transporter = nodemailer.createTransporter({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER || 'your-email@gmail.com',
+                pass: process.env.EMAIL_PASS || 'your-app-password'
+            }
+        });
+
+        // Create email content
+        const emailContent = `
+            <h2>New Nurse Application - ExpressAid</h2>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>License Number:</strong> ${license}</p>
+            <p><strong>Years of Experience:</strong> ${experience || 'Not specified'}</p>
+            <p><strong>Specialization:</strong> ${specialization || 'Not specified'}</p>
+            <p><strong>Certifications:</strong> ${certifications ? certifications.join(', ') : 'None specified'}</p>
+            <br>
+            <p><em>Application submitted on: ${new Date().toLocaleString()}</em></p>
+        `;
+
+        // Email options
+        const mailOptions = {
+            from: process.env.EMAIL_USER || 'your-email@gmail.com',
+            to: process.env.EMAIL_RECEIVER || 'your-email@gmail.com',
+            subject: `New Nurse Application - ${name}`,
+            html: emailContent
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+
+        context.res.status = 200;
+        context.res.body = {
+            success: true,
+            message: 'Application submitted successfully! We will contact you soon.'
+        };
+
+    } catch (error) {
+        context.log.error('Error sending email:', error);
+        context.res.status = 500;
+        context.res.body = {
+            success: false,
+            message: 'Failed to submit application. Please try again later.'
+        };
+    }
+}; 

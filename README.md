@@ -1,6 +1,6 @@
 # ExpressAid Web Application
 
-A modern nursing care website with email functionality for nurse applications.
+A modern nursing care website with email functionality for nurse applications. Deployable to Azure Static Web Apps.
 
 ## Features
 
@@ -94,12 +94,21 @@ When someone submits an application, you'll receive an email with:
 
 ```
 ExpressAid_Web/
-├── index.html          # Main website
-├── styles.css          # Custom styles
-├── server.js           # Express server with email functionality
-├── package.json        # Dependencies
-├── assets/             # Images and media files
-└── README.md           # This file
+├── index.html              # Main website
+├── styles.css              # Custom styles
+├── server.js               # Express server (local development)
+├── package.json            # Dependencies
+├── assets/                 # Images and media files
+├── api/                    # Azure Functions
+│   └── submit-application/
+│       ├── index.js        # Function code
+│       ├── function.json   # Function configuration
+│       └── package.json    # Function dependencies
+├── staticwebapp.config.json # Azure Static Web Apps config
+├── .github/workflows/      # GitHub Actions
+│   └── azure-static-web-apps.yml
+├── DEPLOYMENT.md           # Azure deployment guide
+└── README.md               # This file
 ```
 
 ## Troubleshooting
@@ -123,12 +132,27 @@ ExpressAid_Web/
 2. Check browser console for JavaScript errors
 3. Verify the form is submitting to the correct endpoint
 
+## Deployment
+
+### Azure Static Web Apps
+
+This application is configured for deployment to Azure Static Web Apps. See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment instructions.
+
+### Local Development
+
+For local development, you can still use the Express server:
+
+```bash
+npm run dev
+```
+
 ## Security Notes
 
 - Never commit your email credentials to version control
 - Use environment variables for sensitive information
 - Consider implementing rate limiting for production use
 - Add input validation and sanitization for production
+- For Azure deployment, configure environment variables in the Azure portal
 
 ## License
 
