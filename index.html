@@ -620,19 +620,68 @@
         });
 
         // Form submission
-        document.getElementById('nurseApplicationForm').addEventListener('submit', function(e) {
+        document.getElementById('nurseApplicationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Get form values
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const license = document.getElementById('license').value;
+            const experience = document.getElementById('experience').value;
+            const specialization = document.getElementById('specialization').value;
             
-            // Here you would typically send the data to your server
-            // For demo purposes, we'll just show an alert
-            alert(`Thank you, ${name}! Your application has been submitted. We'll contact you at ${email} shortly.`);
+            // Get selected certifications
+            const certificationsSelect = document.getElementById('certifications');
+            const certifications = Array.from(certificationsSelect.selectedOptions).map(option => option.value);
             
-            // Reset form
-            this.reset();
+            // Validate required fields
+            if (!name || !email || !phone || !license) {
+                alert('Please fill in all required fields (name, email, phone, license)');
+                return;
+            }
+            
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.textContent = 'Submitting...';
+            submitButton.disabled = true;
+            
+            try {
+                // Send data to server
+                const response = await fetch('/submit-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        phone,
+                        license,
+                        experience,
+                        specialization,
+                        certifications
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    this.reset();
+                } else {
+                    alert(result.message || 'Failed to submit application. Please try again.');
+                }
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Failed to submit application. Please check your connection and try again.');
+            } finally {
+                // Reset button state
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            }
         });
 
         // Smooth scrolling for anchor links
