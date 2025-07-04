@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 
 module.exports = async function (context, req) {
     context.log('JavaScript HTTP trigger function processed a request.');
+    context.log('Request method:', req.method);
+    context.log('Request body:', JSON.stringify(req.body));
 
     // Enable CORS
     context.res = {
@@ -48,11 +50,17 @@ module.exports = async function (context, req) {
         }
 
         // Email configuration
-        const transporter = nodemailer.createTransporter({
+        const emailUser = process.env.EMAIL_USER || 'your-email@gmail.com';
+        const emailPass = process.env.EMAIL_PASS || 'your-app-password';
+        
+        context.log('Email configuration - User:', emailUser);
+        context.log('Email configuration - Pass set:', !!emailPass);
+        
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: process.env.EMAIL_USER || 'your-email@gmail.com',
-                pass: process.env.EMAIL_PASS || 'your-app-password'
+                user: emailUser,
+                pass: emailPass
             }
         });
 
@@ -78,8 +86,13 @@ module.exports = async function (context, req) {
             html: emailContent
         };
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+        // Send email (only if credentials are properly configured)
+        if (emailUser !== 'your-email@gmail.com' && emailPass !== 'your-app-password') {
+            await transporter.sendMail(mailOptions);
+            context.log('Email sent successfully');
+        } else {
+            context.log('Email not sent - using default credentials (test mode)');
+        }
 
         context.res.status = 200;
         context.res.body = {

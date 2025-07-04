@@ -28,6 +28,8 @@ app.get('/', (req, res) => {
 
 // Route to handle nurse application form submission
 app.post('/submit-application', async (req, res) => {
+    console.log('Received application submission:', req.body);
+    
     try {
         const {
             name,
@@ -69,8 +71,16 @@ app.post('/submit-application', async (req, res) => {
             html: emailContent
         };
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+        // Send email (only if credentials are properly configured)
+        const emailUser = process.env.EMAIL_USER || 'your-email@gmail.com';
+        const emailPass = process.env.EMAIL_PASS || 'your-app-password';
+        
+        if (emailUser !== 'your-email@gmail.com' && emailPass !== 'your-app-password') {
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent successfully');
+        } else {
+            console.log('Email not sent - using default credentials (test mode)');
+        }
 
         res.json({
             success: true,
