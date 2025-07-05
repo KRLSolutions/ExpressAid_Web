@@ -72,7 +72,7 @@ module.exports = async function (context, req) {
             <p><strong>Phone:</strong> ${phone}</p>
             <p><strong>License Number:</strong> ${license}</p>
             <p><strong>Years of Experience:</strong> ${experience || 'Not specified'}</p>
-            <p><strong>Specialization:</strong> ${specialization || 'Not specified'}</p>
+            <p><strong>Specialization:</strong> ${specialization ? specialization.join(', ') : 'None specified'}</p>
             <p><strong>Certifications:</strong> ${certifications ? certifications.join(', ') : 'None specified'}</p>
             <br>
             <p><em>Application submitted on: ${new Date().toLocaleString()}</em></p>
