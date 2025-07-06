@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - ExpressAid
+name: Build and deploy Node.js app to Azure Web App - expressaid
 
 on:
   push:
@@ -49,18 +49,17 @@ jobs:
           name: node-app
       
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D33E21854143488FB71F88183400FDF8 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_FD2E1C2FF86A4143A5C17E6C49085FC7 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_C595D74A9235436C85738A828DDB6D43 }}
-          auth-type: OIDC
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_E098ED47D56042E6A7531805256ACEB5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_459A38F414C647E782F5256FA43E7F47 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_01FFE7ECCAF74538AE319BFE6CA75EB8 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'ExpressAid'
+          app-name: 'expressaid'
           slot-name: 'Production'
           package: .
 
